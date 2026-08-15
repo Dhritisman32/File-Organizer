@@ -2,7 +2,6 @@
 ####################### IMPORTS ##################
 
 import shutil
-import pathlib
 from pathlib import Path
 
 ################## VARIABLES ##################

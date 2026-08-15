@@ -1,11 +1,10 @@
 from PyQt6.QtWidgets import (
-    QApplication, QPushButton, QLabel, QHBoxLayout, QWidget, 
+    QPushButton, QLabel, QHBoxLayout, QWidget, 
     QFileDialog, QVBoxLayout, QCheckBox, QFrame
     )
-from PyQt6.QtCore import Qt, QThread, pyqtSignal, QTimer
+from PyQt6.QtCore import Qt, QThread, pyqtSignal
 
-import sys
-from core import Orgonaizer
+from Core.core import Orgonaizer
 from pathlib import Path
 
 FOLDER_LABEL_STYLE_DEFAULT = """
@@ -235,7 +234,7 @@ class MainWindow(QWidget):
         self.worker.start()
 
     def actfinishedScan(self, result):
-        self.worker.finished.disconnect(self.scan_finished)
+        self.worker.finished.disconnect(self.actfinishedScan)
         if self.orgonizer.total != 0:
             self.preview_content.setText(result)
             self.preview_status.setText("Do you want to move the files?")
@@ -314,11 +313,3 @@ class MainWindow(QWidget):
             else:
                 self.folder_lable.setText("That was a file, not a folder! Try again.")
                 print(f"Dropped item is a file, ignored: {self.path}")
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-
-    window = MainWindow()
-    window.show()
-    sys.exit(app.exec())
