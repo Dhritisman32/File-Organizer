@@ -2,7 +2,7 @@ from PyQt6.QtWidgets import (
     QApplication, QPushButton, QLabel, QHBoxLayout, QWidget, 
     QFileDialog, QVBoxLayout, QCheckBox, QFrame
     )
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QThread, pyqtSignal, QTimer
 
 import sys
 from core import Orgonaizer
@@ -61,6 +61,22 @@ QPushButton:pressed{
 }
 """
 
+class Worker(QThread):
+    finished = pyqtSignal(str)
+
+    def __init__(self, organizer):
+        super().__init__()
+        self.path = None
+        self.task = None
+        self.result = None
+        self.organizer = organizer
+
+    def run(self):
+        if self.task == "Actscan":
+            self.result = self.organizer.scanFolder(self.path)
+            self.finished.emit(self.result)
+
+
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -71,7 +87,9 @@ class MainWindow(QWidget):
         self.setWindowTitle("File Organizer")
         # self.resize(1200, 760)
         self.setMinimumSize(650, 560)
+
         self.orgonizer = Orgonaizer()
+        self.worker = Worker(self.orgonizer)
 
         self.setAcceptDrops(True)
         self.setup_ui()
@@ -168,7 +186,7 @@ class MainWindow(QWidget):
 
         run_btn = QPushButton("Scan Folder")
         run_btn.setCursor(Qt.CursorShape.PointingHandCursor)
-        run_btn.clicked.connect(self.startScan)
+        run_btn.clicked.connect(self.activestartScan)
         run_btn.setStyleSheet("height: 30px; max-width: 120px; font:15px; padding: 2px 8px; margin:0px 10px 5px 0px;")
         
         bottom_layout.addWidget(run_btn, alignment=Qt.AlignmentFlag.AlignRight)
@@ -205,17 +223,37 @@ class MainWindow(QWidget):
         confirm_frame.setVisible(False)
         return confirm_frame
 
-    def startScan(self):
-        if self.path != None:
-            result = self.orgonizer.scanFolder(self.path)
-            
-            if self.orgonizer.total != 0:
-                self.preview_content.setText(result)
-                self.preview_status.setText("Do you want to move the files?")
-                self.confirm_ui.setVisible(True)
-            else:
-                self.preview_content.setText(result)
-                self.confirm_ui.setVisible(False)
+    def activestartScan(self):
+        if self.path is None:
+            return
+        if self.worker.isRunning():
+            return
+
+        self.worker.path = self.path
+        self.worker.task = "Actscan"
+        self.worker.finished.connect(self.actfinishedScan)
+        self.worker.start()
+
+    def actfinishedScan(self, result):
+        self.worker.finished.disconnect(self.scan_finished)
+        if self.orgonizer.total != 0:
+            self.preview_content.setText(result)
+            self.preview_status.setText("Do you want to move the files?")
+            self.confirm_ui.setVisible(True)
+        else:
+            self.preview_content.setText(result)
+            self.confirm_ui.setVisible(False)
+
+    def pesStartScan(self):
+        if self.path is None:
+            return
+        if self.worker.isRunning():
+            return
+
+        self.worker.path = self.path
+        self.worker.task = "Actscan"
+        self.worker.finished.connect(self.actfinishedScan)
+        self.worker.start()
 
     def organize_files(self):
         self.orgonizer.orgonaizeFolder(self.path)
