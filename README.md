@@ -20,10 +20,10 @@ coming soon...
 
 Example:
 
-git clone https://github.com/Dhritisman32/File-Organizer ~/project/
-cd project
-pip install pyqt6
-python main.py
+- git clone https://github.com/Dhritisman32/File-Organizer ~/project/
+- cd project
+- pip install pyqt6
+- python main.py
 
 ## Usage
 
