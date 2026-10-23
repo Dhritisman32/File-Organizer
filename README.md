@@ -1,6 +1,6 @@
 # Folder Organizer
 
-Automatically organized your messy folders into sections like images, pdf, docs, and more. It's just a click to make your folders more organized.
+Automatically organizes your messy folders into sections like images, pdf, docs, and more. It's just a click to make your folders more organized.
 
 ## Features
 
@@ -10,7 +10,7 @@ Automatically organized your messy folders into sections like images, pdf, docs,
 
 ## Screenshots
 
-comming soon...
+coming soon...
 
 ## Installation
 
@@ -38,11 +38,10 @@ python main.py
 - Any os that can run python.
 - Required libraries:
   - PyQt6
-  - pathlib
 
 ## Future Plans
 
-- Add dark mod
+- Add dark mode
 - Multi-threading
 - Progress bar
 - Auto checks
